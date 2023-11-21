@@ -1,0 +1,70 @@
+server:
+  port: 8081
+baseUrl: http://localhost:${server.port}
+
+spring:
+
+  datasource:
+    url: jdbc:postgresql://8.219.131.180:8765/fintrack
+    username: root
+    password: P@SSWORD666
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+  mail:
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: https://keycloak-fintrack.sythorng.site/auth/realms/Fintrack
+          jwk-set-uri: https://keycloak-fintrack.sythorng.site/auth/realms/Fintrack/protocol/openid-connect/certs
+keycloak:
+  realm: Fintrack
+  resource: fintrack-app
+  #  auth-server-url: https://demo.docengine.tech/auth/ #docker container
+  auth-server-url: https://keycloak-fintrack.sythorng.site/auth/ #docker container
+  credentials:
+    username: 'admin'
+    password: 'admin'
+    client-id: 'fintrack-app' # admin account for creating users
+    secret: 'MYhYGrLOk1UNwK9eTaULwIye39hVujPi'
+    provider: secret
+
+  grant-type: password
+  tokenUrl: https://keycloak-fintrack.sythorng.site/auth/realms/Fintrack/protocol/openid-connect/token
+
+spring.mail:
+  host: smtp.gmail.com
+  port: 587
+  username: soccerdatehrd@gmail.com
+  password: tmkylzbkhzsautkz
+
+spring.servlet:
+  multipart:
+    maxFileSize: 20000MB
+    maxRequestSize: 20000MB
+image:
+  url: ${baseUrl}/api/v1/file/get-image?file=
+
+telegram:
+  url: http://localhost:8082/api/v1/telegram
+
+#for link verify email that get from angular
+LoginPage:
+  url: http://localhost:4200/login
+forgetPasswordPage:
+  url: http://localhost:4200/forget-password
+ExpiredPage:
+  url: http://localhost:4200/not-found
