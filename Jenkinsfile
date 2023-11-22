@@ -7,7 +7,7 @@ pipeline {
     environment {
         DOCKER_REGISTRY = 'kimheang68'
         IMAGE_NAME = 'fintrack-authentication-service'
-        CONTAINER_NAME = 'spring-boot-container'
+        CONTAINER_NAME = 'fintrack-authentication-service-container'
         TELEGRAM_BOT_TOKEN = credentials('telegram-token')
         TELEGRAM_CHAT_ID = credentials('chat-id')
         BUILD_INFO = "${currentBuild.number}"
@@ -112,14 +112,17 @@ pipeline {
         stage('Build Image') {
             steps {
                 script {
-                    sh 'ls -R build/libs'
-                }
-                script {
                     try {
                         def buildNumber = currentBuild.number
-                        def imageTag = "${DOCKER_REGISTRY}/${IMAGE_NAME}:${buildNumber}"
-                        sh "docker build -t ${imageTag} ."
-                        sh "docker push ${imageTag}"
+                        def imageTag = "${IMAGE_NAME}:${buildNumber}"
+                        sh "docker build -t ${DOCKER_REGISTRY}/${imageTag} ."
+
+                        withCredentials([usernamePassword(credentialsId: 'docker-hub-cred',
+                                passwordVariable: 'PASS', usernameVariable: 'USER')]) {
+                            sh "echo \$PASS | docker login -u \$USER --password-stdin"
+                            sh "docker push ${DOCKER_REGISTRY}/${imageTag}"
+                            // sendTelegramMessage("✅ Build Image stage succeeded\nVersion: ${BUILD_INFO}\nCommitter: ${COMMITTER}\nBranch: ${BRANCH}")
+                        }
                     } catch (Exception e) {
                         currentBuild.result = 'FAILURE'
                         sendTelegramMessage("❌ Build Image stage failed: ${e.message}\nVersion: ${BUILD_INFO}\nCommitter: ${COMMITTER}\nBranch: ${BRANCH}")
