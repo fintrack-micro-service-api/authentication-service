@@ -2,8 +2,8 @@ pipeline {
     agent any
 
     tools {
-        gradle 'Gradle'
-        jdk 'JDK'
+        gradle 'gradle'
+        jdk 'jdk'
     }
 
     environment {
