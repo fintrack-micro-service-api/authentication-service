@@ -6,7 +6,7 @@ pipeline {
     }
     environment {
         DOCKER_REGISTRY = 'kimheang68'
-        IMAGE_NAME = 'spring-boot-app'
+        IMAGE_NAME = 'fintrack-authentication-service'
         CONTAINER_NAME = 'spring-boot-container'
         TELEGRAM_BOT_TOKEN = credentials('telegram-token')
         TELEGRAM_CHAT_ID = credentials('chat-id')
@@ -48,7 +48,7 @@ pipeline {
                     withSonarQubeEnv("sonarqube-server") {
                         def scannerCommand = """
                             ${scannerHome}/bin/sonar-scanner \
-                            -Dsonar.projectKey=spring-boot-app \
+                            -Dsonar.projectKey=fintrack-authentication-service \
                             -Dsonar.sources=src \
                             -Dsonar.java.binaries=build/classes \
                             -Dsonar.host.url=http://8.219.131.180:9000 \
