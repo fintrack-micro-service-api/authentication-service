@@ -1,14 +1,13 @@
 pipeline {
     agent any
-
     tools {
-        gradle 'gradle'
-        jdk 'jdk'
+        gradle 'Gradle'
+        jdk 'OpenJDK11'
     }
-
     environment {
         DOCKER_REGISTRY = 'kimheang68'
         IMAGE_NAME = 'spring-boot-app'
+        CONTAINER_NAME = 'spring-boot-container'
         TELEGRAM_BOT_TOKEN = credentials('telegram-token')
         TELEGRAM_CHAT_ID = credentials('chat-id')
         BUILD_INFO = "${currentBuild.number}"
@@ -21,9 +20,8 @@ pipeline {
         stage('Notify Start') {
             steps {
                 script {
-                    echo "Testing Notifications !!!!"
-                    echo "Hello Notifications !!!!"
-                    sendTelegramMessage("🚀 Pipeline Started:\nJob Name: ${env.JOB_NAME}\nJob Description: ${env.JOB_DESCRIPTION}\nVersion: ${BUILD_INFO}\nCommitter: ${COMMITTER}\nBranch: ${BRANCH}")
+                    echo "🚀 Pipeline Started: ${env.JOB_NAME}"
+                    sendTelegramMessage("🚀 Pipeline Started:\nJob Name: ${env.JOB_NAME}\nVersion: ${BUILD_INFO}\nCommitter: ${COMMITTER}\nBranch: ${BRANCH}")
                 }
             }
         }
@@ -32,10 +30,10 @@ pipeline {
             steps {
                 script {
                     try {
-                        sh 'gradle clean build'
+                        sh './gradlew clean build'
                     } catch (Exception e) {
                         currentBuild.result = 'FAILURE'
-                        def errorMessage = "❌ Build stage <b> failed </b>:\n${e.getMessage()}\nVersion: ${BUILD_INFO}\nCommitter: ${COMMITTER}\nBranch: ${BRANCH}\nConsole Output: ${env.BUILD_URL}console"
+                        def errorMessage = "❌ Build stage failed:\n${e.getMessage()}\nVersion: ${BUILD_INFO}\nCommitter: ${COMMITTER}\nBranch: ${BRANCH}\nConsole Output: ${env.BUILD_URL}console"
                         sendTelegramMessage(errorMessage)
                         error(errorMessage)
                     }
@@ -51,7 +49,8 @@ pipeline {
                         def scannerCommand = """
                             ${scannerHome}/bin/sonar-scanner \
                             -Dsonar.projectKey=spring-boot-app \
-                            -Dsonar.sources=src/main/java \
+                            -Dsonar.sources=src \
+                            -Dsonar.java.binaries=build/classes \
                             -Dsonar.host.url=http://8.219.131.180:9000 \
                             -Dsonar.login=${env.SONARQUBE_TOKEN}
                         """
@@ -73,11 +72,10 @@ pipeline {
             steps {
                 script {
                     try {
-                        // Add your test commands here
-                        echo "Running tests..."
+                        sh './gradlew test'
                     } catch (Exception e) {
                         currentBuild.result = 'FAILURE'
-                        sendTelegramMessage("❌ Test stage <b> failed </b>: ${e.message}\nVersion: ${BUILD_INFO}\nCommitter: ${COMMITTER}\nBranch: ${BRANCH}")
+                        sendTelegramMessage("❌ Test stage failed: ${e.message}\nVersion: ${BUILD_INFO}\nCommitter: ${COMMITTER}\nBranch: ${BRANCH}")
                         error("Test stage failed: ${e.message}")
                     }
                 }
@@ -88,8 +86,12 @@ pipeline {
             steps {
                 script {
                     try {
-                        // Add your container check and cleanup commands here
-                        echo "Checking for existing containers..."
+                        def containerId = sh(script: "docker ps -a --filter name=${env.CONTAINER_NAME} -q", returnStdout: true).trim()
+                        echo "Container ID is ${containerId}"
+                        if (containerId) {
+                            sh "docker stop ${containerId}"
+                            sh "docker rm ${containerId}"
+                        }
                     } catch (Exception e) {
                         currentBuild.result = 'FAILURE'
                         sendTelegramMessage("❌ Check for Existing Container stage failed: ${e.message}\nVersion: ${BUILD_INFO}\nCommitter: ${COMMITTER}\nBranch: ${BRANCH}")
@@ -103,16 +105,10 @@ pipeline {
             steps {
                 script {
                     try {
-                        // Add your Docker build and push commands here
                         def buildNumber = currentBuild.number
                         def imageTag = "${DOCKER_REGISTRY}/${IMAGE_NAME}:${buildNumber}"
                         sh "docker build -t ${imageTag} ."
-
-                        withCredentials([usernamePassword(credentialsId: 'docker-hub-cred',
-                                passwordVariable: 'PASS', usernameVariable: 'USER')]) {
-                            sh "echo \$PASS | docker login -u \$USER --password-stdin"
-                            sh "docker push ${imageTag}"
-                        }
+                        sh "docker push ${imageTag}"
                     } catch (Exception e) {
                         currentBuild.result = 'FAILURE'
                         sendTelegramMessage("❌ Build Image stage failed: ${e.message}\nVersion: ${BUILD_INFO}\nCommitter: ${COMMITTER}\nBranch: ${BRANCH}")
@@ -122,25 +118,42 @@ pipeline {
             }
         }
 
-        // Add more stages as needed
-
+        stage('Trigger ManifestUpdate') {
+            steps {
+                script {
+                    try {
+                        build job: 'spring-boot-pipeline-2', parameters: [string(name: 'DOCKERTAG', value: env.BUILD_NUMBER)]
+                    } catch (Exception e) {
+                        currentBuild.result = 'FAILURE'
+                        sendTelegramMessage("❌ Trigger ManifestUpdate stage failed: ${e.message}\nVersion: ${BUILD_INFO}\nCommitter: ${COMMITTER}\nBranch: ${BRANCH}")
+                        error("Trigger ManifestUpdate stage failed: ${e.message}")
+                    }
+                }
+            }
+        }
     }
 
     post {
-        always {
-            emailext body: 'Check console output at $BUILD_URL to view the results.', subject: '${PROJECT_NAME} - Build #${BUILD_NUMBER} - $BUILD_STATUS', to: 'yan.sovanseyha@gmail.com'
-        }
         success {
             sendTelegramMessage("✅ All stages succeeded\nVersion: ${BUILD_INFO}\nCommitter: ${COMMITTER}\nBranch: ${BRANCH}")
             emailext body: "<html><body><b>✅ All stages succeeded</b><br/>Version: ${BUILD_INFO}<br/>Committer: ${COMMITTER}<br/>Branch: ${BRANCH}<br/>Check console output at <a href='${BUILD_URL}'>${BUILD_URL}</a> to view the results.</body></html>",
                 subject: "${env.JOB_NAME} - Build #${env.BUILD_NUMBER} - ${currentBuild.currentResult}",
-                to: 'yan.sovanseyha@gmail.com'  // Close the string here
+                to: "yan.sovanseyha@gmail.com, kimheangken68@gmail.com",
+                mimeType: 'text/html'
         }
         failure {
             emailext body: "<html><body><b>❌ Pipeline failed</b><br/>Version: ${BUILD_INFO}<br/>Committer: ${COMMITTER}<br/>Branch: ${BRANCH}<br/>Check console output at <a href='${BUILD_URL}'>${BUILD_URL}</a> to view the results.</body></html>",
                 subject: "${env.JOB_NAME} - Build #${env.BUILD_NUMBER} - ${currentBuild.currentResult}",
-                to: 'yan.sovanseyha@gmail.com'  // Close the string here
+                to: "yan.sovanseyha@gmail.com, kimheangken68@gmail.com",
+                mimeType: 'text/html'
         }
     }
 }
 
+def sendTelegramMessage(message) {
+    script {
+        sh """
+            curl -s -X POST https://api.telegram.org/bot\${TELEGRAM_BOT_TOKEN}/sendMessage -d chat_id=\${TELEGRAM_CHAT_ID} -d parse_mode="HTML" -d text="${message}"
+        """
+    }
+}
