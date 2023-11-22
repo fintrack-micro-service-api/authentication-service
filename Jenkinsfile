@@ -1,8 +1,8 @@
 pipeline {
     agent any
     tools {
-        gradle 'Gradle'
-        jdk 'OpenJDK11'
+        gradle 'gradle'
+        jdk 'jdk'
     }
     environment {
         DOCKER_REGISTRY = 'kimheang68'
