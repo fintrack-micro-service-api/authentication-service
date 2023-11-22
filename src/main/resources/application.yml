@@ -1,6 +1,10 @@
 server:
   port: 8081
+  servlet:
+    context-path: /fintrack-authentication-service
 baseUrl: http://localhost:${server.port}
+
+
 
 spring:
 
@@ -51,7 +55,10 @@ spring.mail:
   username: soccerdatehrd@gmail.com
   password: tmkylzbkhzsautkz
 
+
+
 spring.servlet:
+  
   multipart:
     maxFileSize: 20000MB
     maxRequestSize: 20000MB
