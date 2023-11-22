@@ -101,8 +101,19 @@ pipeline {
             }
         }
 
+        stage('Debug Workspace') {
+            steps {
+                script {
+                    sh 'ls -R'
+                }
+            }
+        }
+
         stage('Build Image') {
             steps {
+                script {
+                    sh 'ls -R build/libs'
+                }
                 script {
                     try {
                         def buildNumber = currentBuild.number
