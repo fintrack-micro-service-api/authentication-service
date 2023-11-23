@@ -1,0 +1,44 @@
+# Gradle
+.gradle/
+build/
+
+# IntelliJ
+.idea/
+
+# Eclipse
+.classpath
+.project
+.settings/
+
+# Compiled class file
+*.class
+
+# Log files
+*.log
+
+# IntelliJ-specific files
+*.iml
+.idea/
+
+# Eclipse-specific files
+*.pydevproject
+.project
+.metadata
+bin/
+tmp/
+*.tmp
+*.bak
+*.swp
+*~.nib
+
+# Bytecode
+*.class
+
+# Compiled Dynamic Libraries
+*.dll
+*.so
+*.dylib
+
+# OS-specific files
+.DS_Store
+Thumbs.db
