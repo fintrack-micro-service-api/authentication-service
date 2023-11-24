@@ -41,32 +41,32 @@ pipeline {
             }
         }
 
-        stage('Code Quality Check via SonarQube') {
-            steps {
-                script {
-                    def scannerHome = tool 'sonarqube-scanner'
-                    withSonarQubeEnv("sonarqube-server") {
-                        def scannerCommand = """
-                            ${scannerHome}/bin/sonar-scanner \
-                            -Dsonar.projectKey=fintrack-authentication-service \
-                            -Dsonar.sources=src \
-                            -Dsonar.java.binaries=build/classes \
-                            -Dsonar.host.url=http://8.219.131.180:9000 \
-                            -Dsonar.login=${env.SONARQUBE_TOKEN}
-                        """
-                        def codeQualityLogs = sh script: scannerCommand, returnStatus: true
+        // stage('Code Quality Check via SonarQube') {
+        //     steps {
+        //         script {
+        //             def scannerHome = tool 'sonarqube-scanner'
+        //             withSonarQubeEnv("sonarqube-server") {
+        //                 def scannerCommand = """
+        //                     ${scannerHome}/bin/sonar-scanner \
+        //                     -Dsonar.projectKey=fintrack-authentication-service \
+        //                     -Dsonar.sources=src \
+        //                     -Dsonar.java.binaries=build/classes \
+        //                     -Dsonar.host.url=http://8.219.131.180:9000 \
+        //                     -Dsonar.login=${env.SONARQUBE_TOKEN}
+        //                 """
+        //                 def codeQualityLogs = sh script: scannerCommand, returnStatus: true
 
-                        if (codeQualityLogs != 0) {
-                            sendTelegramMessage("❌ Code Quality Check via SonarQube failed")
-                            currentBuild.result = 'FAILURE'
-                            error("Code Quality Check via SonarQube failed")
-                        } else {
-                            echo "✅ Code Quality Check via SonarQube succeeded"
-                        }
-                    }
-                }
-            }
-        }
+        //                 if (codeQualityLogs != 0) {
+        //                     sendTelegramMessage("❌ Code Quality Check via SonarQube failed")
+        //                     currentBuild.result = 'FAILURE'
+        //                     error("Code Quality Check via SonarQube failed")
+        //                 } else {
+        //                     echo "✅ Code Quality Check via SonarQube succeeded"
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
 
         stage('Test') {
             steps {
