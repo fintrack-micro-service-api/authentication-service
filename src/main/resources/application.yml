@@ -41,9 +41,9 @@ keycloak:
   auth-server-url: https://keycloak-fintrack.sythorng.site/auth/ #docker container
   credentials:
     username: 'admin'
-    password: 'admin'
+    password: 'admin123'
     client-id: 'fintrack-app' # admin account for creating users
-    secret: 'MYhYGrLOk1UNwK9eTaULwIye39hVujPi'
+    secret: 'yc3N92U7MgQtyfZ4le3h5ZeF0HTfuqgn'
     provider: secret
 
   grant-type: password
