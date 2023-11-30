@@ -52,13 +52,10 @@ keycloak:
 spring.mail:
   host: smtp.gmail.com
   port: 587
-  username: soccerdatehrd@gmail.com
-  password: tmkylzbkhzsautkz
-
-
+  username: fintrack.hrd.org@gmail.com
+  password: gtylidcaizztbido
 
 spring.servlet:
-  
   multipart:
     maxFileSize: 20000MB
     maxRequestSize: 20000MB
@@ -70,8 +67,14 @@ telegram:
 
 #for link verify email that get from angular
 LoginPage:
-  url: http://localhost:4200/login
+  url: https://www.fintrack.dev/login
 forgetPasswordPage:
-  url: http://localhost:4200/forget-password
+  url: https://www.fintrack.dev/reset
 ExpiredPage:
-  url: http://localhost:4200/not-found
+  url: https://www.fintrack.dev/notfound
+springdoc:
+  swagger-ui:
+    oauth:
+      clientId: fintrack-app
+      clientSecret: yc3N92U7MgQtyfZ4le3h5ZeF0HTfuqgn
+      realm: Fintrack
