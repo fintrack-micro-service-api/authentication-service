@@ -2,7 +2,7 @@ server:
 #  servlet:
 #    context-path: /fintrack-authentication-service
   port: 8081
-baseUrl: http://localhost:${server.port}
+baseUrl: https://api.fintrack.dev/fintrack-authentication-service
 
 
 
@@ -63,7 +63,7 @@ image:
   url: ${baseUrl}/api/v1/file/get-image?file=
 
 telegram:
-  url: http://localhost:8082/api/v1/telegram
+  url: https://api.fintrack.dev/fintrack-telegram-service/api/v1/telegram
 
 #for link verify email that get from angular
 LoginPage:
