@@ -152,13 +152,13 @@ pipeline {
             sendTelegramMessage("✅ All stages succeeded\nVersion: ${BUILD_INFO}\nCommitter: ${COMMITTER}\nBranch: ${BRANCH}")
             emailext body: "<html><body><b>✅ All stages succeeded</b><br/>Version: ${BUILD_INFO}<br/>Committer: ${COMMITTER}<br/>Branch: ${BRANCH}<br/>Check console output at <a href='${BUILD_URL}'>${BUILD_URL}</a> to view the results.</body></html>",
                 subject: "${env.JOB_NAME} - Build #${env.BUILD_NUMBER} - ${currentBuild.currentResult}",
-                to: "yan.sovanseyha@gmail.com, kimheangken68@gmail.com",
+                to: "yan.sovanseyha@gmail.com, kimheangken68@gmail.com, rotanakkosal03@gmail.com",
                 mimeType: 'text/html'
         }
         failure {
             emailext body: "<html><body><b>❌ Pipeline failed</b><br/>Version: ${BUILD_INFO}<br/>Committer: ${COMMITTER}<br/>Branch: ${BRANCH}<br/>Check console output at <a href='${BUILD_URL}'>${BUILD_URL}</a> to view the results.</body></html>",
                 subject: "${env.JOB_NAME} - Build #${env.BUILD_NUMBER} - ${currentBuild.currentResult}",
-                to: "yan.sovanseyha@gmail.com, kimheangken68@gmail.com",
+                to: "yan.sovanseyha@gmail.com, kimheangken68@gmail.com, rotanakkosal03@gmail.com",
                 mimeType: 'text/html'
         }
     }
