@@ -424,6 +424,14 @@ public class UserService {
         if (principal == null) {
             throw new ForbiddenException("need token");
         }
+<<<<<<< HEAD
+=======
+        // try {
+        //     User.toDto(getUserRepresentationById(UUID.fromString(principal.getName())), url);
+        // } catch (Exception e) {
+        //     throw new ForbiddenException("user not found");
+        // }
+>>>>>>> 99a35dd445083ba0943426c9c10b35069d443886
         UserRepresentation userRepresentation= getUserRepresentationById(UUID.fromString(principal.getName()));
         if(userRepresentation.getAttributes()==null){
             userRepresentation.singleAttribute("createdDate", String.valueOf(LocalDateTime.now()));
