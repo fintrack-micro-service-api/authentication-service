@@ -21,6 +21,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("api/v1/file")
+@CrossOrigin
 public class FileStorageRestController {
     private final FileUploadService imageService;
 
