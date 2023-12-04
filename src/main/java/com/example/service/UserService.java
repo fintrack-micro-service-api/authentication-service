@@ -430,11 +430,11 @@ public class UserService {
         if (principal == null) {
             throw new ForbiddenException("need token");
         }
-        try {
-            User.toDto(getUserRepresentationById(UUID.fromString(principal.getName())), url);
-        } catch (Exception e) {
-            throw new ForbiddenException("user not found");
-        }
+        // try {
+        //     User.toDto(getUserRepresentationById(UUID.fromString(principal.getName())), url);
+        // } catch (Exception e) {
+        //     throw new ForbiddenException("user not found");
+        // }
         UserRepresentation userRepresentation= getUserRepresentationById(UUID.fromString(principal.getName()));
         if(userRepresentation.getAttributes()==null){
             userRepresentation.singleAttribute("createdDate", String.valueOf(LocalDateTime.now()));
