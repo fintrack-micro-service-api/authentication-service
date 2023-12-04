@@ -201,7 +201,6 @@ public class UserService {
         userRepresentation.singleAttribute("profile", profileRequest.getProfile());
         userRepresentation.singleAttribute("isVerify", "true");
 
-        userRepresentation.setCredentials(Collections.singletonList(preparePasswordRepresentation(profileRequest.getNewPassword())));
         userRepresentation.setEnabled(true);
         return userRepresentation;
     }
