@@ -10,6 +10,6 @@
         <module name="authentication-service.main" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel target="17" />
+    <bytecodeTargetLevel target="19" />
   </component>
 </project>
