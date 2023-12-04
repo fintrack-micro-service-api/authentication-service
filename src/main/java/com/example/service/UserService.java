@@ -404,12 +404,6 @@ public class UserService {
             );
         }
 
-        if (!userRequest.getNewPassword().matches("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}$")) {
-            throw new BadRequestException(
-                    "Password should be at least 8 character and 1 special character Uppercase and Lowercase character and No Space"
-            );
-        }
-
         try {
 
             UserRepresentation userRepresentation = prepareUserRepresentationForProfile(user, userRequest);
@@ -445,6 +439,37 @@ public class UserService {
                     .build();
         }
         return  null;
+    }
+
+    public ApiResponse<?> updatePassword(String newPassword, Principal principal, Jwt jwt) {
+        if (principal == null) {
+            throw new ForbiddenException("need token");
+        }
+        try {
+            User.toDto(getUserRepresentationById(UUID.fromString(principal.getName())), url);
+        } catch (Exception e) {
+            throw new ForbiddenException("user not found");
+        }
+        //validate password
+        if (!newPassword.matches("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}$")) {
+            throw new BadRequestException(
+                    "Password should be at least 8 character and 1 special character Uppercase and Lowercase character and No Space"
+            );
+        }
+
+        UsersResource usersResource = keycloak.realm(realm).users();
+
+        CredentialRepresentation credential = new CredentialRepresentation();
+        credential.setType(CredentialRepresentation.PASSWORD);
+        credential.setValue(newPassword);
+        credential.setTemporary(false);
+
+        usersResource.get(principal.getName()).resetPassword(credential);
+        return ApiResponse.builder()
+                .message("update password success")
+                .payload(User.toDto(getUserRepresentationById(UUID.fromString(principal.getName())), url))
+                .status(200)
+                .build();
     }
 
 }

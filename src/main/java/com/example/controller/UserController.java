@@ -62,6 +62,14 @@ public class UserController {
         return ResponseEntity.ok().body(userService.updateById(userRequest, principal,jwt));
     }
 
+    @PutMapping("/password")
+    @SecurityRequirement(name = "auth")
+    @Operation(summary = "update password current ")
+    public ResponseEntity<?> updatePassword(@RequestParam String newPassword, Principal principal,@AuthenticationPrincipal Jwt jwt) {
+        return ResponseEntity.ok().body(userService.updatePassword(newPassword, principal,jwt));
+    }
+
+
     @GetMapping("/after-login")
     @SecurityRequirement(name = "auth")
     @Operation(summary = "set Attributes when login git & google ")
