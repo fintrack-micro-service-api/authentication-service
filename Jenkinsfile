@@ -13,7 +13,7 @@ pipeline {
         BUILD_INFO = "${currentBuild.number}"
         COMMITTER = sh(script: 'git log -1 --pretty=format:%an', returnStdout: true).trim()
         BRANCH = sh(script: 'git rev-parse --abbrev-ref HEAD', returnStdout: true).trim()
-        SONARQUBE_TOKEN = credentials('sonarqube-token')
+        // SONARQUBE_TOKEN = credentials('sonarqube-token')
     }
 
     stages {
