@@ -5,10 +5,10 @@ FROM openjdk:17-alpine
 WORKDIR /app
 
 # Copy the JAR file using a wildcard
-COPY build/libs/authentication-service-*.jar authentication-service.jar
+COPY build/libs/fintrack-authentication-service-*.jar fintrack-authentication-service.jar
 
 # Expose the port if your application uses a specific port
 # EXPOSE 8080
 
 # Specify the command to run on container startup
-ENTRYPOINT ["java", "-jar", "authentication-service.jar"]
+ENTRYPOINT ["java", "-jar", "fintrack-authentication-service.jar"]
